@@ -45,28 +45,28 @@ const GLOSSARY = {
 };
 
 const IPA_MAP = {
-  clarity: "/KLAIR-uh-tee/",
-  confidence: "/KON-fi-dense/",
-  resonance: "/REZ-uh-nense/",
-  traction: "/TRAK-shun/",
-  narrative: "/NAR-uh-tiv/",
-  momentum: "/moh-MEN-tum/",
-  presence: "/PREZ-uhns/",
-  connection: "/kuh-NEK-shun/",
-  purpose: "/PUR-puhs/",
-  impact: "/IM-pakt/",
-  conviction: "/kun-VIK-shun/",
-  composure: "/kum-POH-zher/",
-  empathy: "/EM-puh-thee/",
-  structure: "/STRUK-cher/",
-  focus: "/FOH-kus/",
-  energy: "/EN-er-jee/",
-  credibility: "/kred-uh-BIL-uh-tee/",
-  intro: "/IN-troh/",
-  pacing: "/PAY-sing/",
-  flow: "/floh/",
-  finish: "/FIN-ish/",
-  storytelling: "/STOR-ee-tel-ing/"
+  clarity: "[KLAIR-uh-tee]",
+  confidence: "[KON-fi-dense]",
+  resonance: "[REZ-uh-nense]",
+  traction: "[TRAK-shun]",
+  narrative: "[NAR-uh-tiv]",
+  momentum: "[moh-MEN-tum]",
+  presence: "[PREZ-uhns]",
+  connection: "[kuh-NEK-shun]",
+  purpose: "[PUR-puhs]",
+  impact: "[IM-pakt]",
+  conviction: "[kun-VIK-shun]",
+  composure: "[kum-POH-zher]",
+  empathy: "[EM-puh-thee]",
+  structure: "[STRUK-cher]",
+  focus: "[FOH-kus]",
+  energy: "[EN-er-jee]",
+  credibility: "[kred-uh-BIL-uh-tee]",
+  intro: "[IN-troh]",
+  pacing: "[PAY-sing]",
+  flow: "[floh]",
+  finish: "[FIN-ish]",
+  storytelling: "[STOR-ee-tel-ing]"
 };
 
 const STOPWORDS = new Set([
@@ -730,7 +730,7 @@ function buildPronunciation(word) {
 }
 
 function heuristicIpa(word) {
-  if (!word) return "/-/";
+  if (!word) return "[---]";
   let ipa = word
     .replace(/tion/g, "shun")
     .replace(/sion/g, "zhun")
@@ -746,7 +746,7 @@ function heuristicIpa(word) {
     .replace(/ou/g, "ow")
     .replace(/ow/g, "oh")
     .replace(/igh/g, "eye");
-  return `/${ipa}/`;
+  return `[${ipa}]`;
 }
 
 function buildJourneyExample(word, profile, fallback = "") {
@@ -786,9 +786,10 @@ function renderWordLab() {
     <div class="word-title"><h3>${escapeHtml(current.word)}</h3><span class="chip">${current.mastered ? "Mastered" : "Training"}</span></div>
     <button class="btn btn-ghost speak-btn" type="button" data-speak-word="${escapeHtml(current.word)}">Speak Out</button>
     <p class="phonetic">${escapeHtml(current.pronunciation || buildPronunciation(current.word))}</p>
-    <p><strong>Meaning:</strong> ${escapeHtml(current.definition)}</p>
-    <p><strong>Example Statement:</strong> ${escapeHtml(current.example)}</p>
-    <p><strong>3 Synonyms:</strong> ${escapeHtml((current.synonyms || []).slice(0, 3).join(", "))}</p>
+    <p><strong>noun</strong></p>
+    <p>${escapeHtml(current.word)} (noun)</p>
+    <p>${escapeHtml(current.definition)}</p>
+    <p>"${escapeHtml(current.example)}"</p>
   `;
   words.forEach((item, idx) => {
     const q = document.createElement("button");
@@ -808,9 +809,10 @@ function renderWordLab() {
       <p class="phonetic">${escapeHtml(item.pronunciation || buildPronunciation(item.word))}</p>
       <p class="hint">Hover or click to view details</p>
       <div class="word-popover">
-        <p><strong>Meaning:</strong> ${escapeHtml(item.definition)}</p>
-        <p><strong>Example:</strong> ${escapeHtml(item.example)}</p>
-        <p><strong>3 Synonyms:</strong> ${escapeHtml((item.synonyms || []).slice(0, 3).join(", "))}</p>
+        <p><strong>noun</strong></p>
+        <p>${escapeHtml(item.word)} (noun)</p>
+        <p>${escapeHtml(item.definition)}</p>
+        <p>"${escapeHtml(item.example)}"</p>
         <div class="actions-row">
           <button class="btn btn-ghost" type="button" data-speak-word="${escapeHtml(item.word)}">Speak Out</button>
           <button class="btn btn-ghost" type="button" data-word-index="${idx}">${item.mastered ? "Mark Unmastered" : "Mark Mastered"}</button>
@@ -2073,4 +2075,5 @@ function handleQuickMenuNavigation(event) {
   dom.quickMenuToggle.classList.remove("is-open");
   dom.quickMenuToggle.setAttribute("aria-expanded", "false");
 }
+
 
