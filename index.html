@@ -1,0 +1,396 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Griot Labs | Articulate AI</title>
+  <meta name="description" content="Articulate AI by Griot Labs: coach frameworks as private knowledge vaults and student simulation training." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="appLoader" class="app-loader" aria-live="polite">
+    <div class="loader-core">
+      <span class="loader-ring"></span>
+      <span class="loader-ring ring-b"></span>
+      <strong>Articulate AI</strong>
+      <small>Preparing your arena...</small>
+    </div>
+  </div>
+
+  <div class="ambient" aria-hidden="true">
+    <span class="blob blob-a"></span>
+    <span class="blob blob-b"></span>
+    <span class="blob blob-c"></span>
+    <span class="grid"></span>
+  </div>
+
+  <section id="authGate" class="auth-gate">
+    <div class="glass auth-card">
+      <p class="eyebrow">Articulate AI</p>
+      <div class="auth-mode-toggle" id="authModeToggle">
+        <button type="button" class="auth-mode-btn is-active" data-auth-mode="login">Log In</button>
+        <button type="button" class="auth-mode-btn" data-auth-mode="signup">Sign Up</button>
+        <span class="auth-mode-glider" aria-hidden="true"></span>
+      </div>
+      <h1 id="authHeadline">Communication Without Drift.</h1>
+      <blockquote class="quote-box">
+        <p id="quoteText">"The limits of my language mean the limits of my world."</p>
+        <footer id="quoteAuthor">Ludwig Wittgenstein</footer>
+      </blockquote>
+
+      <form id="loginForm" class="login-grid">
+        <label id="signupNameWrap" class="hidden">
+          Full Name
+          <input id="signupName" type="text" placeholder="Your full name" />
+        </label>
+        <label>
+          Work Email
+          <input id="loginEmail" type="email" placeholder="you@company.com" required />
+        </label>
+        <label>
+          Password
+          <input id="loginPassword" type="password" placeholder="Password" required />
+        </label>
+        <label>
+          Role
+          <select id="loginRole" required>
+            <option value="student">Student</option>
+            <option value="coach">Coach</option>
+          </select>
+        </label>
+        <button class="btn btn-primary" type="submit">Log In</button>
+      </form>
+    </div>
+  </section>
+
+  <div id="appRoot" class="hidden">
+    <header class="topbar glass">
+      <div class="brand">
+        <span class="brand-mark">GL</span>
+        <div>
+          <strong>Griot Labs</strong>
+          <small id="roleLabel">Articulate AI</small>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="glassFxToggle" class="btn btn-ghost">Glass FX: On</button>
+        <button id="saveStateBtn" class="btn btn-ghost">Save Progress</button>
+        <button id="logoutBtn" class="btn btn-ghost">Log Out</button>
+        <button id="resetStateBtn" class="btn btn-danger">Reset Local Data</button>
+      </div>
+    </header>
+
+    <div class="quick-menu-wrap">
+      <button id="quickMenuToggle" class="glass quick-menu-toggle" type="button" aria-expanded="false">+</button>
+      <div id="quickMenu" class="glass quick-menu hidden">
+        <button type="button" data-quick-view="setup">Arena Setup</button>
+        <button type="button" data-quick-view="wordlab">Word Lab</button>
+        <button type="button" data-quick-view="practiceground">Practice Ground</button>
+      </div>
+    </div>
+
+    <main class="app-shell">
+      <aside class="sidebar glass" aria-label="Main navigation">
+        <button class="nav-btn is-active" data-view="overview" data-role="both">Overview</button>
+        <button class="nav-btn" data-view="setup" data-role="student">Arena Setup</button>
+        <button class="nav-btn" data-view="wordlab" data-role="student">Word Lab</button>
+        <button class="nav-btn" data-view="practiceground" data-role="student">Practice Ground</button>
+        <button class="nav-btn" data-view="community" data-role="student">Community</button>
+        <button class="nav-btn" data-view="report" data-role="student">Calibration Report</button>
+        <button class="nav-btn" data-view="coachvault" data-role="coach">Coach Vault</button>
+        <button class="nav-btn" data-view="coach" data-role="coach">Coach Insights</button>
+        <p class="side-note">Communication training engine.</p>
+      </aside>
+
+      <section class="content-area">
+        <section class="panel is-active" id="overview-panel" data-panel="overview">
+          <p class="eyebrow">Training Hub</p>
+          <h1 id="overviewTitle">Ready to grow?</h1>
+          <div class="hero-kinetic" aria-hidden="true"><span></span><span></span><span></span></div>
+          <p class="lead" id="overviewLead">Track communication growth with structured practice loops and measurable outcomes.</p>
+
+          <section class="glass gamer-strip">
+            <div class="gamer-item"><small>XP</small><strong id="xpTotal">0</strong></div>
+            <div class="gamer-item"><small>Streak</small><strong id="streakTotal">0 days</strong></div>
+            <div class="gamer-item"><small>Badges</small><strong id="badgeTotal">0</strong></div>
+            <div class="gamer-item"><small>Best Round</small><strong id="sprintBest">0</strong></div>
+          </section>
+
+          <div class="kpi-grid">
+            <article class="glass kpi-card reveal"><h3>Sessions</h3><p id="kpiSessions">0</p></article>
+            <article class="glass kpi-card reveal"><h3>Word Mastery</h3><p id="kpiMastery">0%</p></article>
+            <article class="glass kpi-card reveal"><h3>Avg Overall</h3><p id="kpiOverall">0</p></article>
+            <article class="glass kpi-card reveal"><h3>Current Level</h3><p id="kpiLevel">Starter</p></article>
+          </div>
+          <section id="studentJourney" class="glass history">
+            <h3>Group Journey Leaderboard</h3>
+            <div id="studentLeaderboard"></div>
+            <div class="actions-row">
+              <button class="btn btn-ghost" id="pairPracticeBtn" type="button">Open Community Hub</button>
+              <span id="pairPracticeResult" class="hint">Invite and connect with learners for pair or group practice.</span>
+            </div>
+          </section>
+        </section>
+
+        <section class="panel" id="setup-panel" data-panel="setup">
+          <p class="eyebrow">Arena Setup</p>
+          <h2>Let's build your winning arena.</h2>
+          <form id="setupForm" class="glass form-grid arena-animated">
+            <label>Learner Name<input type="text" id="learnerName" placeholder="e.g., Jabess" required /></label>
+            <label>Role<select id="learnerRole" required><option value="">Select role</option><option value="Student">Student</option><option value="Startup Founder">Startup Founder</option><option value="Manager">Manager</option><option value="Executive">Executive</option><option value="Coach">Coach</option></select></label>
+            <label>AI Persona<select id="aiPersonaSelect"><option value="executive">Executive Mentor</option><option value="friendly">Supportive Friend</option><option value="direct">Direct Drill Sergeant</option><option value="story">Storytelling Guide</option><option value="ghanaian">Ghanaian Conversational Coach</option></select></label>
+            <label>Or Type Persona<input id="customPersonaInput" type="text" placeholder="e.g., Confident Ghanaian VC partner with calm tone" /></label>
+            <label class="span-2">What outcome do you want?<textarea id="goalText" rows="3" placeholder="e.g., Introduce my startup in 45 seconds with confidence." required></textarea></label>
+            <label>Audience<input type="text" id="audienceText" placeholder="e.g., Investor panel" required /></label>
+
+            <fieldset class="span-2 focus-group">
+              <legend>What should we focus on? (multi-select)</legend>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="The Intro" />The Intro</label>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="Pacing" />Pacing</label>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="Flow" />Flow</label>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="Finish" />Finish</label>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="Storytelling" />Storytelling</label>
+              <label class="focus-chip"><input type="checkbox" name="focusAreas" value="Confidence" />Confidence</label>
+            </fieldset>
+
+            <label class="span-2">Source Material<textarea id="sourceText" rows="6" placeholder="Paste notes, draft speech, or outline"></textarea></label>
+            <label class="span-2">Upload source files (any type, max 10 files)<input type="file" id="sourceFile" multiple /></label>
+            <ul id="fileList" class="file-list"></ul>
+
+            <label class="span-2">Extra instructions<textarea id="additionalNotes" rows="3" placeholder="Anything we should adapt to make practice feel natural for you?"></textarea></label>
+            <div class="span-2 actions-row">
+              <button class="btn btn-ghost" type="button" id="dictateNotesBtn">Talk Instead of Type</button>
+              <button class="btn btn-ghost" type="button" id="recordNotesBtn">Record Instructions</button>
+              <span id="recordStatus" class="hint">Recorder idle.</span>
+            </div>
+            <audio id="notesPlayback" controls class="span-2 hidden"></audio>
+
+            <div class="span-2 actions-row">
+              <button class="btn btn-primary" type="submit">Save Setup</button>
+              <button class="btn btn-ghost" type="button" id="generateWordsBtn">Generate Strategic Words</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel" id="wordlab-panel" data-panel="wordlab">
+          <p class="eyebrow">Word Lab</p>
+          <h2>Your New Words.</h2>
+          <div class="glass lab-toolbar">
+            <p id="wordLabSummary">No vocabulary generated yet.</p>
+            <div class="actions-row">
+              <button class="btn btn-primary" id="startWordPracticeBtn" type="button">Start Audio Word Practice</button>
+            </div>
+          </div>
+
+          <section class="word-arena">
+            <article class="glass focus-word-card" id="focusWordCard"><p class="hint">Generate words to begin.</p></article>
+            <aside class="glass word-queue"><h3>Word List</h3><div id="wordQueue"></div></aside>
+          </section>
+          <div class="actions-row">
+            <button class="btn btn-ghost" id="prevWordBtn" type="button">Previous Word</button>
+            <button class="btn btn-primary" id="nextWordBtn" type="button">Next Word</button>
+          </div>
+
+          <div id="wordCards" class="word-grid"></div>
+        </section>
+
+        <section class="panel" id="practiceground-panel" data-panel="practiceground">
+          <div class="panel-header">
+            <p class="eyebrow">Practice Ground</p>
+            <h2>Calibration.</h2>
+            <div class="hero-kinetic hero-kinetic-tight" aria-hidden="true"><span></span><span></span><span></span></div>
+            <p class="lead">Set your tactical window, choose persona, then run a live audio coaching round with real-time progress feedback.</p>
+          </div>
+
+          <div class="practice-layout">
+            <div class="practice-main">
+              <section class="glass section-card">
+                <h3 class="section-title">1. Configure Round</h3>
+                <section class="calibration-grid">
+                  <button class="duration-card" type="button" data-duration="60"><small>Short</small><strong>1 Minute</strong><span>Blitz Session</span></button>
+                  <button class="duration-card is-active" type="button" data-duration="180"><small>Standard</small><strong>3 Minutes</strong><span>Core Drill</span></button>
+                  <button class="duration-card" type="button" data-duration="300"><small>Full</small><strong>5 Minutes</strong><span>Deep Immersion</span></button>
+                  <button class="duration-card" type="button" data-duration="600"><small>Custom</small><strong>10 Minutes</strong><span>Endurance</span></button>
+                </section>
+                <div class="simulation-config">
+                  <label class="control-field">Difficulty<select id="difficultySelect"><option value="easy">Guided</option><option value="standard" selected>Standard</option><option value="hard">Hard</option><option value="expert">Expert</option></select></label>
+                  <label class="hidden">Duration<select id="simulationDuration"><option value="60">1 minute</option><option value="180" selected>3 minutes</option><option value="300">5 minutes</option><option value="600">10 minutes</option></select></label>
+                  <button class="btn btn-ghost" id="startScenarioBtn" type="button">Generate Mission Prompt</button>
+                  <button class="btn btn-primary" id="ignitePracticeBtn" type="button">Ignite Simulation</button>
+                </div>
+              </section>
+
+              <article id="scenarioPrompt" class="glass scenario-box section-card">Generate a mission prompt, choose persona, then start your live audio coaching conversation.</article>
+
+              <section class="glass practice-strip section-card">
+                <div class="bubble-wrap" id="wordBubbleWrap"></div>
+                <div class="timer-progress" aria-label="Session time progress">
+                  <div id="timerFill" class="timer-fill"></div>
+                </div>
+              </section>
+
+              <div class="glass live-controls section-card">
+                <div class="live-state"><span class="dot" id="liveDot"></span><span id="liveStateText">Microphone idle</span></div>
+                <div class="timer-box" id="timerBox">00:00</div>
+                <div class="actions-row">
+                  <button class="btn btn-primary" id="startLiveBtn" type="button">Start Live Session</button>
+                  <button class="btn btn-danger" id="stopLiveBtn" type="button">Stop Session</button>
+                </div>
+              </div>
+            </div>
+
+            <aside class="practice-side">
+              <section class="glass practice-hud section-card">
+                <div><small>Target Words</small><strong id="practiceTargetCount">0</strong></div>
+                <div><small>Popped</small><strong id="practicePoppedCount">0</strong></div>
+                <div><small>Round XP</small><strong id="practiceRoundXp">0</strong></div>
+                <div><small>Word Streak</small><strong id="practiceWordStreak">0</strong></div>
+              </section>
+              <section class="glass section-card">
+                <h3 class="section-title">2. Select AI Persona</h3>
+                <section class="persona-gallery" id="personaGallery">
+                  <article class="glass persona-card active" data-persona="executive"><h3>Executive Mentor</h3><p>High-clarity, investor-ready pressure style.</p></article>
+                  <article class="glass persona-card" data-persona="friendly"><h3>Supportive Friend</h3><p>Encouraging practice partner with gentle correction.</p></article>
+                  <article class="glass persona-card" data-persona="direct"><h3>Direct Drill Coach</h3><p>No-fluff challenge mode for rapid growth.</p></article>
+                  <article class="glass persona-card" data-persona="ghanaian"><h3>Ghanaian Coach</h3><p>Conversational style grounded in Ghanaian context.</p></article>
+                </section>
+              </section>
+            </aside>
+          </div>
+
+          <div class="practice-output">
+            <section class="glass transcript-box section-card">
+              <h3 class="section-title">Live Transcript</h3>
+              <div id="liveTranscript">Waiting for live audio...</div>
+            </section>
+            <section id="feedbackBox" class="glass feedback hidden section-card"></section>
+          </div>
+        </section>
+
+        <section class="panel" id="report-panel" data-panel="report">
+          <p class="eyebrow">Calibration Report</p>
+          <h2>Performance diagnostics</h2>
+          <div id="metricBars" class="metric-bars glass"></div>
+          <section class="glass report-actions">
+            <button class="btn btn-primary" id="exportReportBtn" type="button">Export Latest Report (.md)</button>
+            <p id="reportMeta">No session evaluated yet.</p>
+          </section>
+          <section class="glass history"><h3>Session History</h3><div id="historyTableWrap"></div></section>
+        </section>
+
+        <section class="panel" id="community-panel" data-panel="community">
+          <p class="eyebrow">Community</p>
+          <h2>Learner network and group practice</h2>
+
+          <section class="community-grid">
+            <article class="glass history">
+              <h3>Discover Learners</h3>
+              <p class="hint">View mini profiles and send friendship invites.</p>
+              <div id="communityDirectory"></div>
+            </article>
+
+            <article class="glass history">
+              <h3>Incoming Invites</h3>
+              <p class="hint">Accept or decline invites from learners.</p>
+              <div id="incomingInvites"></div>
+            </article>
+          </section>
+
+          <section class="community-grid">
+            <article class="glass history">
+              <h3>Your Connections</h3>
+              <p class="hint">Connected learners can join your group journeys and chat.</p>
+              <div id="connectionsList"></div>
+            </article>
+
+            <article class="glass history">
+              <h3>Create Group Journey</h3>
+              <form id="journeyForm" class="form-grid">
+                <label>Journey Name<input id="journeyName" type="text" placeholder="e.g., Pitch Precision Squad" required /></label>
+                <label>Objective<input id="journeyGoal" type="text" placeholder="e.g., 3-minute startup pitch with zero filler" required /></label>
+                <fieldset class="span-2 focus-group">
+                  <legend>Select Members (2 or more)</legend>
+                  <div id="journeyMembers"></div>
+                </fieldset>
+                <div class="span-2 actions-row">
+                  <button class="btn btn-primary" id="createJourneyBtn" type="submit">Create Journey</button>
+                </div>
+              </form>
+            </article>
+          </section>
+
+          <section class="community-grid">
+            <article class="glass history">
+              <h3>Group Journeys</h3>
+              <p class="hint">Track shared tasks and leaderboard rankings like a league table.</p>
+              <div id="journeyList"></div>
+            </article>
+
+            <article class="glass history">
+              <h3>Community Chat</h3>
+              <label>Chat Room
+                <select id="chatRoomSelect"></select>
+              </label>
+              <div id="chatMessages" class="chat-box"></div>
+              <div class="actions-row">
+                <input id="chatInput" type="text" placeholder="Send a message..." />
+                <button class="btn btn-primary" id="sendChatBtn" type="button">Send</button>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <section class="panel" id="coachvault-panel" data-panel="coachvault">
+          <p class="eyebrow">Coach Vault</p>
+          <h2>Private Framework Knowledge Vault</h2>
+          <form id="frameworkForm" class="glass form-grid">
+            <label>Framework Name<input id="frameworkName" type="text" placeholder="e.g., Pyramid Message Method" required /></label>
+            <label>Method Type<select id="frameworkType"><option>Public Speaking</option><option>Executive Presence</option><option>Pitching</option><option>Storytelling</option></select></label>
+            <label class="span-2">Method Summary<textarea id="frameworkSummary" rows="4" placeholder="Describe your method, principles, and scoring logic." required></textarea></label>
+            <label class="span-2">Upload framework files (PDF, DOCX, PPTX, audio, video, etc.)<input id="frameworkFiles" type="file" multiple /></label>
+            <div class="span-2 actions-row"><button class="btn btn-primary" type="submit">Save to Vault</button></div>
+          </form>
+          <section class="glass history">
+            <h3>Saved Coach Frameworks</h3>
+            <div id="frameworkList"></div>
+          </section>
+        </section>
+
+        <section class="panel" id="coach-panel" data-panel="coach">
+          <p class="eyebrow">Coach Insights</p>
+          <h2>Cohort and intervention visibility</h2>
+          <div class="coach-grid">
+            <article class="glass coach-card"><h3>Learner Snapshot</h3><p id="coachLearner">No learner profile saved.</p></article>
+            <article class="glass coach-card"><h3>Primary Friction</h3><p id="coachFriction">Run at least one simulation.</p></article>
+            <article class="glass coach-card"><h3>Recommended Drill</h3><p id="coachDrill">No drill recommendation yet.</p></article>
+          </div>
+          <section class="glass intervention"><h3>Intervention Queue</h3><ul id="interventionList"></ul></section>
+          <section class="glass history">
+            <h3>Forwarded Student Reports</h3>
+            <div id="forwardedReports"></div>
+          </section>
+          <section class="glass form-grid">
+            <h3 class="span-2">Assign Simulation Test</h3>
+            <label>Target Student<input id="assignStudent" type="text" placeholder="e.g., Ama Mensah" /></label>
+            <label>Difficulty<select id="assignDifficulty"><option>Guided</option><option selected>Standard</option><option>Hard</option><option>Expert</option></select></label>
+            <label class="span-2">Test Instructions<textarea id="assignBrief" rows="3" placeholder="Set a mission based on progress gaps."></textarea></label>
+            <div class="span-2 actions-row"><button class="btn btn-primary" id="assignTestBtn" type="button">Assign Test</button></div>
+          </section>
+          <section class="glass history">
+            <h3>Cohort Leaderboard</h3>
+            <div id="cohortLeaderboard"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer"><p>&copy; <span id="year"></span> Griot Labs. Articulate AI.</p></footer>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
+
