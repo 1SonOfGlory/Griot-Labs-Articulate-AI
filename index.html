@@ -13,10 +13,11 @@
 <body>
   <div id="appLoader" class="app-loader" aria-live="polite">
     <div class="loader-core">
-      <span class="loader-ring"></span>
-      <span class="loader-ring ring-b"></span>
       <strong>Articulate AI</strong>
       <small>Preparing your arena...</small>
+      <p id="loaderQuoteText" class="loader-quote">"Speak clearly, if you speak at all."</p>
+      <small id="loaderQuoteAuthor" class="loader-quote-author">Oliver Wendell Holmes Sr.</small>
+      <div class="loader-line"><span></span></div>
     </div>
   </div>
 
@@ -77,11 +78,16 @@
       </div>
       <div class="top-actions">
         <button id="glassFxToggle" class="btn btn-ghost">Glass FX: On</button>
+        <button id="themeToggleBtn" class="btn btn-ghost">Theme: Dark</button>
         <button id="saveStateBtn" class="btn btn-ghost">Save Progress</button>
         <button id="logoutBtn" class="btn btn-ghost">Log Out</button>
         <button id="resetStateBtn" class="btn btn-danger">Reset Local Data</button>
       </div>
     </header>
+    <section class="glass app-quote-bar">
+      <p id="appQuoteText">"The limits of my language mean the limits of my world."</p>
+      <small id="appQuoteAuthor">Ludwig Wittgenstein</small>
+    </section>
 
     <div class="quick-menu-wrap">
       <button id="quickMenuToggle" class="glass quick-menu-toggle" type="button" aria-expanded="false">+</button>
@@ -387,7 +393,14 @@
       </section>
     </main>
 
-    <footer class="site-footer"><p>&copy; <span id="year"></span> Griot Labs. Articulate AI.</p></footer>
+    <footer class="site-footer">
+      <p>&copy; <span id="year"></span> Griot Labs. Articulate AI.</p>
+      <p class="footer-links">
+        <a href="./privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="./terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="./data-compliance.html" target="_blank" rel="noopener noreferrer">Data & Compliance</a>
+      </p>
+    </footer>
   </div>
 
   <script src="./script.js"></script>

@@ -45,28 +45,28 @@ const GLOSSARY = {
 };
 
 const IPA_MAP = {
-  clarity: "/ˈklær.ə.ti/",
-  confidence: "/ˈkɒn.fɪ.dəns/",
-  resonance: "/ˈrɛz.ə.nəns/",
-  traction: "/ˈtræk.ʃən/",
-  narrative: "/ˈnær.ə.tɪv/",
-  momentum: "/məˈmɛn.təm/",
-  presence: "/ˈprɛz.əns/",
-  connection: "/kəˈnɛk.ʃən/",
-  purpose: "/ˈpɜː.pəs/",
-  impact: "/ˈɪm.pækt/",
-  conviction: "/kənˈvɪk.ʃən/",
-  composure: "/kəmˈpəʊ.ʒə/",
-  empathy: "/ˈɛm.pə.θi/",
-  structure: "/ˈstrʌk.tʃə/",
-  focus: "/ˈfəʊ.kəs/",
-  energy: "/ˈɛn.ə.dʒi/",
-  credibility: "/ˌkrɛ.dɪˈbɪ.lə.ti/",
-  intro: "/ˈɪn.trəʊ/",
-  pacing: "/ˈpeɪ.sɪŋ/",
-  flow: "/fləʊ/",
-  finish: "/ˈfɪn.ɪʃ/",
-  storytelling: "/ˈstɔː.riˌtɛl.ɪŋ/"
+  clarity: "/KLAIR-uh-tee/",
+  confidence: "/KON-fi-dense/",
+  resonance: "/REZ-uh-nense/",
+  traction: "/TRAK-shun/",
+  narrative: "/NAR-uh-tiv/",
+  momentum: "/moh-MEN-tum/",
+  presence: "/PREZ-uhns/",
+  connection: "/kuh-NEK-shun/",
+  purpose: "/PUR-puhs/",
+  impact: "/IM-pakt/",
+  conviction: "/kun-VIK-shun/",
+  composure: "/kum-POH-zher/",
+  empathy: "/EM-puh-thee/",
+  structure: "/STRUK-cher/",
+  focus: "/FOH-kus/",
+  energy: "/EN-er-jee/",
+  credibility: "/kred-uh-BIL-uh-tee/",
+  intro: "/IN-troh/",
+  pacing: "/PAY-sing/",
+  flow: "/floh/",
+  finish: "/FIN-ish/",
+  storytelling: "/STOR-ee-tel-ing/"
 };
 
 const STOPWORDS = new Set([
@@ -129,7 +129,8 @@ const defaultState = {
     chats: {}
   },
   ui: {
-    glassFx: true
+    glassFx: true,
+    theme: "dark"
   },
   savedAt: null
 };
@@ -169,6 +170,10 @@ const dom = {
   appRoot: document.getElementById("appRoot"),
   quoteText: document.getElementById("quoteText"),
   quoteAuthor: document.getElementById("quoteAuthor"),
+  loaderQuoteText: document.getElementById("loaderQuoteText"),
+  loaderQuoteAuthor: document.getElementById("loaderQuoteAuthor"),
+  appQuoteText: document.getElementById("appQuoteText"),
+  appQuoteAuthor: document.getElementById("appQuoteAuthor"),
   loginForm: document.getElementById("loginForm"),
   loginEmail: document.getElementById("loginEmail"),
   loginPassword: document.getElementById("loginPassword"),
@@ -176,6 +181,7 @@ const dom = {
   roleLabel: document.getElementById("roleLabel"),
   logoutBtn: document.getElementById("logoutBtn"),
   glassFxToggle: document.getElementById("glassFxToggle"),
+  themeToggleBtn: document.getElementById("themeToggleBtn"),
   quickMenuToggle: document.getElementById("quickMenuToggle"),
   quickMenu: document.getElementById("quickMenu"),
 
@@ -292,6 +298,7 @@ function init() {
   setAuthMode("login");
   hydrateUI();
   applyGlassFx();
+  applyTheme();
   activatePointerSlide();
   stageArenaSetupAnimation();
   revealAnimations();
@@ -305,6 +312,7 @@ function attachEvents() {
   dom.logoutBtn.addEventListener("click", handleLogout);
   dom.authModeBtns.forEach((btn) => btn.addEventListener("click", () => setAuthMode(btn.dataset.authMode)));
   dom.glassFxToggle.addEventListener("click", toggleGlassFx);
+  dom.themeToggleBtn.addEventListener("click", toggleTheme);
   dom.quickMenuToggle.addEventListener("click", toggleQuickMenu);
   dom.quickMenu.addEventListener("click", handleQuickMenuNavigation);
   window.addEventListener("click", (event) => {
@@ -396,13 +404,19 @@ function startQuoteRotation() {
 
 function renderQuote(idx) {
   const q = QUOTES[idx];
-  dom.quoteText.style.opacity = "0.15";
-  dom.quoteAuthor.style.opacity = "0.15";
+  [dom.quoteText, dom.quoteAuthor, dom.loaderQuoteText, dom.loaderQuoteAuthor, dom.appQuoteText, dom.appQuoteAuthor]
+    .filter(Boolean)
+    .forEach((node) => { node.style.opacity = "0.15"; });
   setTimeout(() => {
     dom.quoteText.textContent = `"${q.text}"`;
     dom.quoteAuthor.textContent = q.author;
-    dom.quoteText.style.opacity = "1";
-    dom.quoteAuthor.style.opacity = "1";
+    if (dom.loaderQuoteText) dom.loaderQuoteText.textContent = `"${q.text}"`;
+    if (dom.loaderQuoteAuthor) dom.loaderQuoteAuthor.textContent = q.author;
+    if (dom.appQuoteText) dom.appQuoteText.textContent = `"${q.text}"`;
+    if (dom.appQuoteAuthor) dom.appQuoteAuthor.textContent = q.author;
+    [dom.quoteText, dom.quoteAuthor, dom.loaderQuoteText, dom.loaderQuoteAuthor, dom.appQuoteText, dom.appQuoteAuthor]
+      .filter(Boolean)
+      .forEach((node) => { node.style.opacity = "1"; });
   }, 180);
 }
 
@@ -662,14 +676,6 @@ async function onGenerateWords() {
   setView("wordlab");
 }
 
-function onMarkAllMastered() {
-  if (!state.strategicWords.length) return;
-  state.strategicWords = state.strategicWords.map((item) => ({ ...item, mastered: true }));
-  addXp(25);
-  saveState();
-  renderAll();
-}
-
 function generateStrategicWords(profile) {
   const blob = [profile.goalText, profile.audienceText, profile.sourceText, profile.additionalNotes, ...(profile.focusAreas || [])].join(" ").toLowerCase();
   const tokens = blob.match(/[a-z][a-z'-]{2,}/g) || [];
@@ -726,26 +732,20 @@ function buildPronunciation(word) {
 function heuristicIpa(word) {
   if (!word) return "/-/";
   let ipa = word
-    .replace(/tion/g, "ʃən")
-    .replace(/sion/g, "ʒən")
-    .replace(/ch/g, "tʃ")
-    .replace(/sh/g, "ʃ")
-    .replace(/th/g, "θ")
+    .replace(/tion/g, "shun")
+    .replace(/sion/g, "zhun")
+    .replace(/ch/g, "ch")
+    .replace(/sh/g, "sh")
+    .replace(/th/g, "th")
     .replace(/ph/g, "f")
     .replace(/qu/g, "kw")
-    .replace(/oo/g, "uː")
-    .replace(/ee/g, "iː")
-    .replace(/ea/g, "iː")
-    .replace(/ai|ay/g, "eɪ")
-    .replace(/ou/g, "aʊ")
-    .replace(/ow/g, "əʊ")
-    .replace(/igh/g, "aɪ")
-    .replace(/a/g, "æ")
-    .replace(/e/g, "ɛ")
-    .replace(/i/g, "ɪ")
-    .replace(/o/g, "ɒ")
-    .replace(/u/g, "ʌ");
-  if (ipa.length > 2) ipa = `ˈ${ipa}`;
+    .replace(/oo/g, "oo")
+    .replace(/ee/g, "ee")
+    .replace(/ea/g, "ee")
+    .replace(/ai|ay/g, "ay")
+    .replace(/ou/g, "ow")
+    .replace(/ow/g, "oh")
+    .replace(/igh/g, "eye");
   return `/${ipa}/`;
 }
 
@@ -1950,15 +1950,6 @@ function cryptoRandomId() {
   return (window.crypto && window.crypto.randomUUID) ? crypto.randomUUID().split("-")[0] : Math.random().toString(36).slice(2, 10);
 }
 
-function shuffle(array) {
-  const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
 function revealAnimations() {
   const nodes = document.querySelectorAll(".reveal");
   const observer = new IntersectionObserver((entries) => {
@@ -2052,6 +2043,18 @@ function applyGlassFx() {
   if (dom.glassFxToggle) dom.glassFxToggle.textContent = `Glass FX: ${isOn ? "On" : "Off"}`;
 }
 
+function toggleTheme() {
+  state.ui.theme = state.ui.theme === "light" ? "dark" : "light";
+  applyTheme();
+  saveState();
+}
+
+function applyTheme() {
+  const theme = state.ui?.theme === "light" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", theme);
+  if (dom.themeToggleBtn) dom.themeToggleBtn.textContent = `Theme: ${theme === "light" ? "Light" : "Dark"}`;
+}
+
 function toggleQuickMenu() {
   const willOpen = dom.quickMenu.classList.contains("hidden");
   dom.quickMenu.classList.toggle("hidden", !willOpen);
@@ -2070,3 +2073,4 @@ function handleQuickMenuNavigation(event) {
   dom.quickMenuToggle.classList.remove("is-open");
   dom.quickMenuToggle.setAttribute("aria-expanded", "false");
 }
+

@@ -3,6 +3,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/data-compliance", "destination": "/data-compliance.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
