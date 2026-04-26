@@ -1204,6 +1204,16 @@ textarea:hover {
 
 .metric-bars { display: grid; gap: 0.6rem; }
 
+#reportInsightsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+#reportWordGateActions {
+  margin-top: 0.5rem;
+}
+
 .metric-row { display: grid; gap: 0.32rem; }
 .metric-head { display: flex; justify-content: space-between; font-size: 0.9rem; }
 
@@ -1529,7 +1539,8 @@ textarea:hover {
   .kpi-grid,
   .feature-grid,
   .form-grid,
-  .word-grid {
+  .word-grid,
+  #reportInsightsGrid {
     grid-template-columns: 1fr;
   }
   .span-2 { grid-column: auto; }

@@ -262,12 +262,13 @@ const dom = {
   practiceRoundXp: document.getElementById("practiceRoundXp"),
   practiceWordStreak: document.getElementById("practiceWordStreak"),
   liveTranscript: document.getElementById("liveTranscript"),
-  feedbackBox: document.getElementById("feedbackBox"),
 
   metricBars: document.getElementById("metricBars"),
   historyTableWrap: document.getElementById("historyTableWrap"),
   reportMeta: document.getElementById("reportMeta"),
   exportReportBtn: document.getElementById("exportReportBtn"),
+  reportInsightsGrid: document.getElementById("reportInsightsGrid"),
+  reportWordGateActions: document.getElementById("reportWordGateActions"),
 
   frameworkForm: document.getElementById("frameworkForm"),
   frameworkName: document.getElementById("frameworkName"),
@@ -375,7 +376,7 @@ function attachEvents() {
   dom.exportReportBtn.addEventListener("click", exportLatestReport);
   dom.frameworkForm.addEventListener("submit", saveFramework);
   dom.assignTestBtn.addEventListener("click", assignCoachTest);
-  dom.feedbackBox.addEventListener("click", handlePracticeActions);
+  dom.reportWordGateActions.addEventListener("click", handlePracticeActions);
   dom.journeyForm.addEventListener("submit", createGroupJourney);
   dom.sendChatBtn.addEventListener("click", sendCommunityMessage);
   dom.chatRoomSelect.addEventListener("change", renderChatMessages);
@@ -890,10 +891,10 @@ function startLiveAudioSession() {
   dom.liveDot.classList.add("live");
   dom.liveStateText.textContent = state.practice?.wordGatePassed ? "Live full simulation active" : "Live word-practice active";
   dom.timerBox.classList.remove("warning");
-  dom.feedbackBox.classList.add("hidden");
   renderWordBubbles();
   updatePracticeHud();
   updateTimerDisplay();
+  appendTranscript("AI", buildOpeningCoachLine());
 
   recognition = new SpeechApi();
   recognition.lang = "en-US";
@@ -973,7 +974,7 @@ function stopLiveAudioSession(autoEnded = false) {
   saveState();
   renderFeedback(result, wordScore);
   renderAll();
-  setView("practiceground");
+  setView("report");
 }
 
 function appendTranscript(speaker, text) {
@@ -983,7 +984,7 @@ function appendTranscript(speaker, text) {
   line.innerHTML = `<strong>${escapeHtml(speaker)}:</strong> ${escapeHtml(text)}`;
   dom.liveTranscript.appendChild(line);
   dom.liveTranscript.scrollTop = dom.liveTranscript.scrollHeight;
-  simulateAiReply(text);
+  if (speaker === "You") simulateAiReply(text);
 }
 
 function simulateAiReply(userText) {
@@ -996,21 +997,44 @@ function simulateAiReply(userText) {
     line.innerHTML = `<strong>AI:</strong> ${escapeHtml(response)}`;
     dom.liveTranscript.appendChild(line);
     dom.liveTranscript.scrollTop = dom.liveTranscript.scrollHeight;
+    speakAiResponse(response);
   }, 900);
 }
 
 function buildPersonaResponse(input, persona) {
   const trimmed = input.split(".")[0] || input;
-  if ((state.profile.aiPersona || "").includes("ghanaian")) {
-    return `Nice one. Keep it simple and direct: "${trimmed}". Now add one clear reason this matters today.`;
+  const audience = state.profile.audienceText || "your audience";
+  const goal = state.profile.goalText || "your objective";
+  if ((state.profile.aiPersona || "").includes("ghanaian") || String(persona).toLowerCase().includes("ghanaian")) {
+    return `Chale, good start. You said "${trimmed}". Now give me one full sentence for ${audience}, and tie it to this goal: ${goal}.`;
   }
   if ((state.profile.aiPersona || "").includes("friendly")) {
-    return `You are doing great. Let us sharpen this: "${trimmed}". Give me one stronger closing line.`;
+    return `You are doing great. Let us sharpen this: "${trimmed}". Add one complete sentence that links to ${audience}.`;
   }
   if ((state.profile.aiPersona || "").includes("direct")) {
-    return `Cut the fluff. Say this in one sentence: "${trimmed}". Then end with a firm ask.`;
+    return `Cut the fluff. Say this in one sentence: "${trimmed}". Then end with a direct ask for ${audience}.`;
   }
-  return `Good direction. Tighten this phrase: "${trimmed}". Now lead with your outcome in the first line.`;
+  return `Good direction. Tighten this phrase: "${trimmed}". Lead with your outcome: ${goal}.`;
+}
+
+function buildOpeningCoachLine() {
+  const audience = state.profile.audienceText || "your audience";
+  const goal = state.profile.goalText || "communicate clearly";
+  const focus = state.profile.focusAreas.length ? state.profile.focusAreas.join(", ") : "clarity and confidence";
+  if ((state.profile.aiPersona || "").includes("ghanaian")) {
+    return `Akwaaba. I am your Ghanaian coach for this round. We are speaking to ${audience}. Your mission is ${goal}. Start with one complete opening sentence, then I will challenge you on ${focus}.`;
+  }
+  return `I am your AI coach for this round. We are speaking to ${audience}. Your mission is ${goal}. Start with one complete opening sentence and I will coach your ${focus}.`;
+}
+
+function speakAiResponse(text) {
+  if (!("speechSynthesis" in window) || !text) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.94;
+  utter.pitch = 1;
+  utter.lang = (state.profile.aiPersona || "").includes("ghanaian") ? "en-GH" : "en-US";
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
 }
 
 function updateTimerDisplay() {
@@ -1125,28 +1149,31 @@ function runEvaluation(payload, difficultyKey) {
 }
 
 function renderFeedback(result, wordPractice = null) {
-  dom.feedbackBox.classList.remove("hidden");
-  dom.feedbackBox.innerHTML = `
-    <h3>Pulse Check</h3>
-    <p>${escapeHtml(result.pulse)}</p>
-    <h3>The Breakdown</h3>
-    <ul>${result.breakdown.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
-    <h3>Speech Diagnostics</h3>
+  const latest = state.sessions[state.sessions.length - 1];
+  if (!latest) return;
+  const scoreSummary = wordPractice?.summary || `${state.practice.lastWordScore || 0}% word score from latest round.`;
+  const diagnosticsHtml = `
     <ul>
-      <li>Turns: ${result.diagnostics?.turnCount ?? 0}</li>
-      <li>Isolated Turns: ${result.diagnostics?.isolatedTurns ?? 0} (${result.diagnostics?.isolatedRatio ?? 0}%)</li>
-      <li>Complete Sentences: ${result.diagnostics?.completeRatio ?? 0}%</li>
-      <li>Filler Words: ${result.diagnostics?.fillerCount ?? 0}</li>
-      <li>Long Pauses: ${result.diagnostics?.longPauses ?? 0}</li>
-      <li>Pace: ${result.diagnostics?.wpm ?? 0} WPM</li>
-      <li>Vocal Cues: ${result.diagnostics?.vocalCues?.questions ?? 0} questions, ${result.diagnostics?.vocalCues?.emphasis ?? 0} emphasis cues</li>
+      <li>Turns: ${latest.diagnostics?.turnCount ?? 0}</li>
+      <li>Isolated Turns: ${latest.diagnostics?.isolatedTurns ?? 0} (${latest.diagnostics?.isolatedRatio ?? 0}%)</li>
+      <li>Complete Sentences: ${latest.diagnostics?.completeRatio ?? 0}%</li>
+      <li>Filler Words: ${latest.diagnostics?.fillerCount ?? 0}</li>
+      <li>Long Pauses: ${latest.diagnostics?.longPauses ?? 0}</li>
+      <li>Pace: ${latest.diagnostics?.wpm ?? 0} WPM</li>
+      <li>Vocal Cues: ${latest.diagnostics?.vocalCues?.questions ?? 0} questions, ${latest.diagnostics?.vocalCues?.emphasis ?? 0} emphasis cues</li>
     </ul>
-    <h3>The Refinement</h3>
-    <p><strong>Before:</strong> ${escapeHtml(result.refinement.before)}</p>
-    <p><strong>After:</strong> ${escapeHtml(result.refinement.after)}</p>
-    <h3>The Challenge</h3>
-    <p>${escapeHtml(result.challenge)}</p>
-    ${wordPractice ? `<h3>Word Practice Score</h3><p>${wordPractice.summary}</p><div class="actions-row"><button class="btn btn-primary" data-action="proceed-real-sim" type="button">Progress to Real Simulation</button><button class="btn btn-ghost" data-action="retake-word-practice" type="button">Retake Word Practice</button></div>` : ""}
+  `;
+  dom.reportInsightsGrid.innerHTML = `
+    <article class="glass word-card"><h3>Pulse Check</h3><p>${escapeHtml(latest.pulse)}</p></article>
+    <article class="glass word-card"><h3>The Breakdown</h3><ul>${latest.breakdown.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul></article>
+    <article class="glass word-card"><h3>The Refinement</h3><p><strong>Before:</strong> ${escapeHtml(latest.refinement.before)}</p><p><strong>After:</strong> ${escapeHtml(latest.refinement.after)}</p></article>
+    <article class="glass word-card"><h3>The Challenge</h3><p>${escapeHtml(latest.challenge)}</p></article>
+    <article class="glass word-card"><h3>Speech Diagnostics</h3>${diagnosticsHtml}</article>
+    <article class="glass word-card"><h3>Word Practice Score</h3><p>${escapeHtml(scoreSummary)}</p></article>
+  `;
+  dom.reportWordGateActions.innerHTML = `
+    <button class="btn btn-primary" data-action="proceed-real-sim" type="button">Progress to Real Simulation</button>
+    <button class="btn btn-ghost" data-action="retake-word-practice" type="button">Retake Word Practice</button>
   `;
 }
 
@@ -1239,7 +1266,6 @@ function handlePracticeActions(event) {
     state.practice.wordGatePassed = true;
     saveState();
     setView("practiceground");
-    dom.feedbackBox.classList.add("hidden");
     dom.scenarioPrompt.textContent = "Full simulation unlocked. Start a fresh live session and deliver your complete conversation.";
     return;
   }
@@ -1271,6 +1297,8 @@ function escapeRegExp(input) {
 function renderReport() {
   const latest = state.sessions[state.sessions.length - 1];
   if (!latest) {
+    dom.reportInsightsGrid.innerHTML = "<p>No session assessment yet.</p>";
+    dom.reportWordGateActions.innerHTML = "";
     dom.metricBars.innerHTML = "<p>No metrics yet.</p>";
     dom.historyTableWrap.innerHTML = "<p>No session history yet.</p>";
     dom.reportMeta.textContent = "No session evaluated yet.";
@@ -1831,9 +1859,7 @@ function renderSimulationPrep() {
     renderWordBubbles();
     updatePracticeHud();
     updateTimerDisplay();
-    if (!dom.feedbackBox || dom.feedbackBox.classList.contains("hidden")) {
-      dom.liveStateText.textContent = state.practice?.wordGatePassed ? "Ready for full simulation" : "Ready for word-practice gate";
-    }
+    dom.liveStateText.textContent = state.practice?.wordGatePassed ? "Ready for full simulation" : "Ready for word-practice gate";
   }
 }
 

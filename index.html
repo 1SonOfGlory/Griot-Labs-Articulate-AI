@@ -272,13 +272,17 @@
               <h3 class="section-title">Live Transcript</h3>
               <div id="liveTranscript">Waiting for live audio...</div>
             </section>
-            <section id="feedbackBox" class="glass feedback hidden section-card"></section>
           </div>
         </section>
 
         <section class="panel" id="report-panel" data-panel="report">
           <p class="eyebrow">Calibration Report</p>
           <h2>Performance diagnostics</h2>
+          <section id="reportInsights" class="glass history">
+            <h3>Session Assessment Dashboard</h3>
+            <div id="reportInsightsGrid"></div>
+            <div id="reportWordGateActions" class="actions-row"></div>
+          </section>
           <div id="metricBars" class="metric-bars glass"></div>
           <section class="glass report-actions">
             <button class="btn btn-primary" id="exportReportBtn" type="button">Export Latest Report (.md)</button>
